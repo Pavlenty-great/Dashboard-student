@@ -1,66 +1,349 @@
-/* src/styles/Body.css */
-
-body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-}
-
-h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  margin-bottom: 5px;
-}
-
-input {
-  width: 300px;
-  padding: 5px;
-  margin-right: 10px;
-}
-
-button {
-  padding: 5px 10px;
-  cursor: pointer;
-}
-
-/* Стили для контейнеров списков */
-.teachers-list,
-.exams-list,
-.notes {
-  border: 1px solid #ccc;
-  padding: 10px;
-  max-height: 200px; /* Максимальная высота контейнера */
-  overflow-y: auto; /* Добавляет вертикальную прокрутку при необходимости */
-  margin-bottom: 20px;
-  width: 200px; /* Ограничение ширины до 200px */
-}
-
-/* Стили для контейнера заметок */
-.notes {
+.body {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.notes input,
-.notes button {
-  margin-bottom: 10px;
+/* Верхний ряд с преподавателями и экзаменами */
+.top-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
 }
 
-/* Стили для вертикального расположения списков */
-.teachers-list,
+.section {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.section h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+/* Стили для преподавателей */
+.teachers-section {
+  min-height: 400px;
+}
+
+.teachers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.teachers-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.teachers-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.teachers-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.teachers-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.teacher-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  background: #f9f9f9;
+  min-height: 80px;
+}
+
+.teacher-card h3 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.subjects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.subject-tag {
+  background: #3498db;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Стили для экзаменов */
+.exams-section {
+  min-height: 400px;
+}
+
 .exams-list {
-  display: block; /* Устанавливаем блочное отображение для вертикального расположения */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 5px;
 }
 
-/* Стили для родительского контейнера */
-.body-container {
-  display: block; /* Устанавливаем блочное отображение для вертикального расположения */
+.exams-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.exams-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.exams-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.exams-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.exam-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #f8f9fa;
+  min-height: 60px;
+}
+
+.exam-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.exam-name {
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+}
+
+.exam-type {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: white;
+  width: fit-content;
+}
+
+.exam-type.экзамен {
+  background: #e74c3c;
+}
+
+.exam-type.зачет {
+  background: #27ae60;
+}
+
+.exam-toggle {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exam-toggle.passed {
+  background: #27ae60; /* Зеленый для галочки */
+  color: white;
+  border: 2px solid #219653;
+}
+
+.exam-toggle.not-passed {
+  background: #e74c3c; /* Красный для крестика */
+  color: white;
+  border: 2px solid #c0392b;
+}
+
+.exam-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* Стили для заметок */
+.notes-section {
+  min-height: 300px;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-input {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-shrink: 0;
+}
+
+.note-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.add-note-btn {
+  padding: 10px 15px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  white-space: nowrap;
+}
+
+.add-note-btn:hover {
+  background: #2980b9;
+}
+
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 350px;
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 5px;
+}
+
+.notes-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notes-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.notes-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.notes-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.note-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  background: #fff9e6;
+  min-height: 60px;
+}
+
+.note-content {
+  flex: 1;
+  min-width: 0; /* Для правильного переноса текста */
+}
+
+.note-content p {
+  margin: 0 0 5px 0;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.note-date {
+  font-size: 11px;
+  color: #666;
+}
+
+.delete-note-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #e74c3c;
+  cursor: pointer;
+  padding: 0 5px;
+  flex-shrink: 0;
+}
+
+.delete-note-btn:hover {
+  color: #c0392b;
+}
+
+.no-notes {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  margin: 20px 0;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .body {
+    padding: 10px;
+    gap: 15px;
+  }
+  
+  .top-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .teachers-section,
+  .exams-section {
+    min-height: 300px;
+  }
+  
+  .teachers-list,
+  .exams-list {
+    max-height: 250px;
+  }
+  
+  .notes-section {
+    max-height: 400px;
+  }
+  
+  .notes-list {
+    max-height: 300px;
+  }
+  
+  .notes-input {
+    flex-direction: column;
+  }
+  
+  .teacher-card,
+  .exam-item {
+    min-height: 70px;
+  }
 }

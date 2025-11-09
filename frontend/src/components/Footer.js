@@ -73,7 +73,7 @@ const Footer = () => {
   return (
     <footer className="footer">
       <div className="footer-content">
-        <p>© {new Date().getFullYear()} Учебное заведение</p>
+        <p>© {new Date().getFullYear()} Университет дубна</p>
         
         {currentWeek && currentSemester && (
           <div className="study-info">

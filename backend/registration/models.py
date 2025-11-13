@@ -52,3 +52,20 @@ class Student(AbstractUser):
         db_table = 'students'
         verbose_name = _('student')
         verbose_name_plural = _('students')
+
+class Teacher(models.Model):
+    first_name = models.CharField(max_length=100, verbose_name='Имя')
+    last_name = models.CharField(max_length=100, verbose_name='Фамилия')
+    middle_name = models.CharField(max_length=100, blank=True, verbose_name='Отчество')
+    subject = models.CharField(max_length=200, verbose_name='Предмет')
+    
+    def __str__(self):
+        return f"{self.last_name} {self.first_name} {self.middle_name} - {self.subject}"
+    
+    def full_name(self):
+        return f"{self.last_name} {self.first_name} {self.middle_name}"
+    
+    class Meta:
+        db_table = 'teachers'
+        
+        managed = False

@@ -46,24 +46,6 @@
   padding-right: 5px;
 }
 
-.teachers-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.teachers-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-.teachers-list::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-.teachers-list::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
 .teacher-card {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -76,6 +58,12 @@
   margin: 0 0 10px 0;
   color: #2c3e50;
   font-size: 16px;
+}
+
+.teacher-card .subject {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
 }
 
 .subjects {
@@ -105,24 +93,6 @@
   max-height: 350px;
   overflow-y: auto;
   padding-right: 5px;
-}
-
-.exams-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.exams-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-.exams-list::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-.exams-list::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
 }
 
 .exam-item {
@@ -179,13 +149,13 @@
 }
 
 .exam-toggle.passed {
-  background: #27ae60; /* Зеленый для галочки */
+  background: #27ae60;
   color: white;
   border: 2px solid #219653;
 }
 
 .exam-toggle.not-passed {
-  background: #e74c3c; /* Красный для крестика */
+  background: #e74c3c;
   color: white;
   border: 2px solid #c0392b;
 }
@@ -242,24 +212,6 @@
   padding-right: 5px;
 }
 
-.notes-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.notes-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-.notes-list::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-.notes-list::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
 .note-item {
   display: flex;
   justify-content: space-between;
@@ -273,7 +225,7 @@
 
 .note-content {
   flex: 1;
-  min-width: 0; /* Для правильного переноса текста */
+  min-width: 0;
 }
 
 .note-content p {
@@ -306,6 +258,33 @@
   color: #666;
   font-style: italic;
   margin: 20px 0;
+}
+
+/* Общие стили скроллбаров */
+.teachers-list::-webkit-scrollbar,
+.exams-list::-webkit-scrollbar,
+.notes-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.teachers-list::-webkit-scrollbar-track,
+.exams-list::-webkit-scrollbar-track,
+.notes-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.teachers-list::-webkit-scrollbar-thumb,
+.exams-list::-webkit-scrollbar-thumb,
+.notes-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.teachers-list::-webkit-scrollbar-thumb:hover,
+.exams-list::-webkit-scrollbar-thumb:hover,
+.notes-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 /* Адаптивность */
@@ -346,4 +325,27 @@
   .exam-item {
     min-height: 70px;
   }
+}
+
+/* Утилитарные классы */
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.error {
+  text-align: center;
+  padding: 20px;
+  color: #e74c3c;
+  background: #ffeaea;
+  border-radius: 6px;
+}
+
+.teacher-card {
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-left: 4px solid #007bff;
 }

@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import login, logout, authenticate
 from .models import Student
+from .models import Teacher
 
 @api_view(['POST'])
 def register(request):
@@ -106,3 +107,20 @@ def dashboard_data(request):  # ← И ЭТА!
             {'subject': 'Программирование', 'grade': 5}
         ]
     })
+
+@api_view(['GET'])
+def teachers_list(request):
+    teachers = Teacher.objects.all()
+    teachers_data = []
+    
+    for teacher in teachers:
+        teachers_data.append({
+            'id': teacher.id,
+            'full_name': teacher.full_name(),
+            'first_name': teacher.first_name,
+            'last_name': teacher.last_name, 
+            'middle_name': teacher.middle_name,
+            'subject': teacher.subject
+        })
+    
+    return Response(teachers_data)

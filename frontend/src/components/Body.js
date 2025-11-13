@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Body.css';
+import TeachersList from './TeachersList.js';
 
 const Body = () => {
-  // Состояние для списка преподавателей (только для чтения)
-  const teachers = [
-    { id: 1, name: 'Иванов А.А.', subjects: ['Математика', 'Алгебра'] },
-    { id: 2, name: 'Петрова С.И.', subjects: ['Физика', 'Механика'] },
-    { id: 3, name: 'Сидоров В.П.', subjects: ['Программирование', 'Базы данных'] },
-    { id: 4, name: 'Козлова Е.В.', subjects: ['Английский язык'] },
-    { id: 5, name: 'Федоров М.С.', subjects: ['История', 'Философия'] },
-  ];
-
   // Состояние для экзаменов и зачетов
   const [exams, setExams] = useState([
     { id: 1, name: 'Математика', type: 'экзамен', passed: false },
@@ -75,21 +67,7 @@ const Body = () => {
       {/* Верхний ряд: преподаватели и экзамены рядом */}
       <div className="top-row">
         {/* Секция преподавателей */}
-        <div className="section teachers-section">
-          <h2>Список преподавателей</h2>
-          <div className="teachers-list">
-            {teachers.map(teacher => (
-              <div key={teacher.id} className="teacher-card">
-                <h3>{teacher.name}</h3>
-                <div className="subjects">
-                  {teacher.subjects.map((subject, index) => (
-                    <span key={index} className="subject-tag">{subject}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <TeachersList />  {/* ← Замените статичный список на компонент */}
 
         {/* Секция экзаменов и зачетов */}
         <div className="section exams-section">

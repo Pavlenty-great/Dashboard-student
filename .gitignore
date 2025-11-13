@@ -3,6 +3,8 @@
 venv/
 env/
 .venv/
+backend/registration/migrations/__pycache__/__init__.cpython-312.pyc
+backend/registration/migrations/__pycache__/0001_initial.cpython-312.pyc
 
 # Database
 .sqlite3

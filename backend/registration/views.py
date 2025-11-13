@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from django.contrib.auth import login, logout, authenticate
 from .models import Student
 from .models import Teacher
+from django.http import JsonResponse
+from .models import Exam
 
 @api_view(['POST'])
 def register(request):
@@ -124,3 +126,16 @@ def teachers_list(request):
         })
     
     return Response(teachers_data)
+
+def exams_api(request):
+    exams = list(Exam.objects.all().values())
+    return JsonResponse(exams, safe=False)
+
+def toggle_exam(request, exam_id):
+    try:
+        exam = Exam.objects.get(id=exam_id)
+        exam.passed = not exam.passed
+        exam.save()
+        return JsonResponse({'success': True, 'passed': exam.passed})
+    except Exam.DoesNotExist:
+        return JsonResponse({'success': False}, status=404)

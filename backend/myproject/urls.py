@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.urls import path, include
 from django.urls import path
 from registration import views  # ← Должен быть такой импорт
 
@@ -10,4 +11,5 @@ urlpatterns = [
     path('api/check-auth/', views.check_auth),
     path('api/dashboard/', views.dashboard_data),
     path('api/teachers/', views.teachers_list, name='teachers_list'),
+    path('', include('registration.urls')),
 ]

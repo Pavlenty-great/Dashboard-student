@@ -349,3 +349,29 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-left: 4px solid #007bff;
 }
+
+.exam-details {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.exam-date,
+.exam-classroom,
+.exam-teacher {
+  font-size: 11px;
+  color: #666;
+}
+
+.exam-date {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.no-data {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+}

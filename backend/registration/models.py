@@ -69,3 +69,51 @@ class Teacher(models.Model):
         db_table = 'teachers'
         
         managed = False
+
+class Subject(models.Model):
+    SUBJECT_TYPES = [
+        ('exam', 'Экзамен'),
+        ('test', 'Зачёт'),
+    ]
+    
+    name = models.CharField(max_length=200, verbose_name='Название предмета')
+    subject_type = models.CharField(max_length=10, choices=SUBJECT_TYPES, verbose_name='Тип')
+    date = models.DateField(verbose_name='Дата')
+    time = models.TimeField(verbose_name='Время', blank=True, null=True)
+    classroom = models.CharField(max_length=50, verbose_name='Аудитория', blank=True)
+    teacher = models.CharField(max_length=100, verbose_name='Преподаватель', blank=True)
+    notes = models.TextField(verbose_name='Примечания', blank=True)
+    
+    class Meta:
+        verbose_name = 'Предмет'
+        verbose_name_plural = 'Предметы'
+        ordering = ['date', 'time']
+    
+    def __str__(self):
+        return f"{self.name} ({self.get_subject_type_display()})"
+    
+from django.db import models
+
+from django.db import models
+
+class Exam(models.Model):
+    TYPE_CHOICES = [
+        ('экзамен', 'Экзамен'),
+        ('зачет', 'Зачёт'),
+    ]
+    
+    name = models.CharField(max_length=200, verbose_name='Название предмета')
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES, verbose_name='Тип')
+    date = models.DateField(verbose_name='Дата', null=True, blank=True)
+    time = models.TimeField(verbose_name='Время', null=True, blank=True)
+    classroom = models.CharField(max_length=50, verbose_name='Аудитория', blank=True)
+    teacher = models.CharField(max_length=100, verbose_name='Преподаватель', blank=True)
+    passed = models.BooleanField(default=False, verbose_name='Сдан')
+
+    class Meta:
+        verbose_name = 'Экзамен/зачёт'
+        verbose_name_plural = 'Экзамены и зачёты'
+        ordering = ['date', 'time']
+
+    def __str__(self):
+        return f"{self.name} ({self.type})"

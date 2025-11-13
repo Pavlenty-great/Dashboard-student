@@ -3,19 +3,17 @@ import '../styles/Body.css';
 import TeachersList from './TeachersList.js';
 
 const Body = () => {
-  // Состояние для экзаменов и зачетов
-  const [exams, setExams] = useState([
-    { id: 1, name: 'Математика', type: 'экзамен', passed: false },
-    { id: 2, name: 'Физика', type: 'зачет', passed: false },
-    { id: 3, name: 'Программирование', type: 'экзамен', passed: false },
-    { id: 4, name: 'Английский язык', type: 'зачет', passed: false },
-    { id: 5, name: 'История', type: 'экзамен', passed: false },
-    { id: 6, name: 'Философия', type: 'зачет', passed: false },
-  ]);
+  // Состояние для экзаменов и зачетов из БД
+  const [exams, setExams] = useState([]);
 
   // Состояние для заметок
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState('');
+
+  // Загрузка экзаменов из БД
+  useEffect(() => {
+    fetchExams();
+  }, []);
 
   // Загрузка заметок из localStorage при монтировании
   useEffect(() => {
@@ -30,11 +28,34 @@ const Body = () => {
     localStorage.setItem('studentNotes', JSON.stringify(notes));
   }, [notes]);
 
+  // Загрузка экзаменов из БД
+  const fetchExams = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/exams/');
+      const data = await response.json();
+      setExams(data);
+    } catch (error) {
+      console.error('Ошибка загрузки экзаменов:', error);
+    }
+  };
+
   // Обработчик изменения статуса экзамена/зачета
-  const handleExamToggle = (examId) => {
-    setExams(exams.map(exam => 
-      exam.id === examId ? { ...exam, passed: !exam.passed } : exam
-    ));
+  const handleExamToggle = async (examId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/exams/${examId}/toggle/`, {
+        method: 'POST',
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        // Обновляем локальное состояние
+        setExams(exams.map(exam => 
+          exam.id === examId ? { ...exam, passed: result.passed } : exam
+        ));
+      }
+    } catch (error) {
+      console.error('Ошибка обновления статуса:', error);
+    }
   };
 
   // Обработчик добавления новой заметки
@@ -62,14 +83,27 @@ const Body = () => {
     }
   };
 
+  // Форматирование даты
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const options = { day: 'numeric', month: 'long' };
+    return new Date(dateString).toLocaleDateString('ru-RU', options);
+  };
+
+  // Форматирование времени
+  const formatTime = (timeString) => {
+    if (!timeString) return '';
+    return timeString.slice(0, 5);
+  };
+
   return (
     <div className="body">
       {/* Верхний ряд: преподаватели и экзамены рядом */}
       <div className="top-row">
         {/* Секция преподавателей */}
-        <TeachersList />  {/* ← Замените статичный список на компонент */}
+        <TeachersList />
 
-        {/* Секция экзаменов и зачетов */}
+        {/* Секция экзаменов и зачетов из БД */}
         <div className="section exams-section">
           <h2>Экзамены и зачеты</h2>
           <div className="exams-list">
@@ -80,6 +114,22 @@ const Body = () => {
                   <span className={`exam-type ${exam.type}`}>
                     {exam.type === 'экзамен' ? 'Экзамен' : 'Зачет'}
                   </span>
+                  {(exam.date || exam.classroom || exam.teacher) && (
+                    <div className="exam-details">
+                      {exam.date && (
+                        <span className="exam-date">
+                          {formatDate(exam.date)}
+                          {exam.time && ` в ${formatTime(exam.time)}`}
+                        </span>
+                      )}
+                      {exam.classroom && (
+                        <span className="exam-classroom">Ауд: {exam.classroom}</span>
+                      )}
+                      {exam.teacher && (
+                        <span className="exam-teacher">{exam.teacher}</span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <button
                   className={`exam-toggle ${exam.passed ? 'passed' : 'not-passed'}`}
@@ -89,6 +139,9 @@ const Body = () => {
                 </button>
               </div>
             ))}
+            {exams.length === 0 && (
+              <p className="no-data">Нет данных об экзаменах</p>
+            )}
           </div>
         </div>
       </div>

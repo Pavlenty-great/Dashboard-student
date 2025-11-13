@@ -58,22 +58,49 @@ const Body = () => {
     }
   };
 
-  // Обработчик добавления новой заметки
-  const handleAddNote = () => {
+  // Обработчик добавления новой заметки в БД
+  const handleAddNote = async () => {
     if (newNote.trim()) {
-      const note = {
-        id: Date.now(),
-        text: newNote.trim(),
-        date: new Date().toLocaleString('ru-RU')
-      };
-      setNotes([note, ...notes]);
-      setNewNote('');
+      try {
+        const response = await fetch('http://localhost:8000/api/notes/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: newNote.trim() })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          setNotes([result.note, ...notes]);
+          setNewNote('');
+        } else {
+          console.error('Ошибка добавления заметки:', result.error);
+        }
+      } catch (error) {
+        console.error('Ошибка добавления заметки:', error);
+      }
     }
   };
 
-  // Обработчик удаления заметки
-  const handleDeleteNote = (noteId) => {
-    setNotes(notes.filter(note => note.id !== noteId));
+  // Обработчик удаления заметки из БД
+  const handleDeleteNote = async (noteId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/notes/${noteId}/delete/`, {
+        method: 'DELETE',
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setNotes(notes.filter(note => note.id !== noteId));
+      } else {
+        console.error('Ошибка удаления заметки:', result.error);
+      }
+    } catch (error) {
+      console.error('Ошибка удаления заметки:', error);
+    }
   };
 
   // Обработчик нажатия Enter для добавления заметки
@@ -94,6 +121,18 @@ const Body = () => {
   const formatTime = (timeString) => {
     if (!timeString) return '';
     return timeString.slice(0, 5);
+  };
+
+  // Форматирование даты заметки
+  const formatNoteDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleString('ru-RU', {
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
@@ -167,7 +206,9 @@ const Body = () => {
             <div key={note.id} className="note-item">
               <div className="note-content">
                 <p>{note.text}</p>
-                <span className="note-date">{note.date}</span>
+                <span className="note-date">
+                  {note.date || formatNoteDate(note.created_at)}
+                </span>
               </div>
               <button
                 onClick={() => handleDeleteNote(note.id)}

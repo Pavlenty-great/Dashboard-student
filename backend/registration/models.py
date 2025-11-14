@@ -31,11 +31,9 @@ class StudentManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class Student(AbstractUser):
-    # Убираем username полностью
     username = None
     email = models.EmailField(_('email address'), unique=True)
     
-    # Новые поля
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30) 
     middle_name = models.CharField(_('middle name'), max_length=30, blank=True)
@@ -43,8 +41,7 @@ class Student(AbstractUser):
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'group_number']
-    
-    # Используем кастомный менеджер
+
     objects = StudentManager()
 
     def __str__(self):

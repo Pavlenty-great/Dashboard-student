@@ -53,7 +53,7 @@ def register(request):
         return Response({'error': str(e)}, status=400)
 
 @api_view(['POST'])
-def login_view(request):  # ← ЭТА ФУНКЦИЯ ДОЛЖНА БЫТЬ!
+def login_view(request):
     email = request.data.get('email')
     password = request.data.get('password')
     
@@ -75,12 +75,12 @@ def login_view(request):  # ← ЭТА ФУНКЦИЯ ДОЛЖНА БЫТЬ!
         return Response({'error': 'Неверный email или пароль'}, status=400)
 
 @api_view(['POST'])
-def logout_view(request):  # ← И ЭТА ТОЖЕ!
+def logout_view(request):
     logout(request)
     return Response({'message': 'Выход выполнен'})
 
 @api_view(['GET'])
-def check_auth(request):  # ← И ЭТА!
+def check_auth(request):
     if request.user.is_authenticated:
         user_data = {
             'id': request.user.id,
@@ -94,7 +94,7 @@ def check_auth(request):  # ← И ЭТА!
     return Response({'authenticated': False})
 
 @api_view(['GET'])
-def dashboard_data(request):  # ← И ЭТА!
+def dashboard_data(request):
     if not request.user.is_authenticated:
         return Response({'error': 'Не авторизован'}, status=401)
         

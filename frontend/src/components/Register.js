@@ -19,15 +19,15 @@ const Register = ({ switchToLogin }) => {
     setLoading(true);
     setError('');
 
-    console.log('Данные для регистрации:', form); // ← посмотрим что отправляется
+    console.log('Данные для регистрации:', form);
 
     const result = await register(form);
     
-    console.log('Ответ от сервера:', result); // ← посмотрим что пришло
+    console.log('Ответ от сервера:', result);
     
     if (!result.success) {
         setError(result.error);
-        console.log('Ошибка:', result.error); // ← детали ошибки
+        console.log('Ошибка:', result.error);
     }
     setLoading(false);
 };

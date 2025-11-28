@@ -1,4 +1,5 @@
 from rest_framework.decorators import api_view
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from django.contrib.auth import login, logout, authenticate
 from .models import Teacher
@@ -145,17 +146,46 @@ def toggle_exam(request, exam_id):
 # API для заметок
 @csrf_exempt
 def notes_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Не авторизован'}, status=401)
+
+    try:
+        student = Student.objects.get(id=request.user.id)
+    except Student.DoesNotExist:
+        return JsonResponse({'error': 'Студент не найден'}, status=404)
+
     if request.method == 'GET':
-        try:
-            # Используем первого студента
-            student = Student.objects.first()
-            if not student:
-                return JsonResponse([], safe=False)
-            
-            notes = list(StudentNote.objects.filter(student=student).values())
-            return JsonResponse(notes, safe=False)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+        scope = request.GET.get('scope', 'personal')
+
+        if scope == 'group':
+            #групповые заметки для этой же группы
+            notes_qs = StudentNote.objects.filter(
+                is_group_note=True,
+                group_number=student.group_number
+            ).order_by('-created_at')
+        else:
+            notes_qs = StudentNote.objects.filter(
+                student=student,
+                is_group_note=False
+            ).order_by('-created_at')
+
+        notes = [
+            {
+                'id': n.id,
+                'text': n.text,
+                'created_at': n.created_at.isoformat(),
+                'date': n.created_at.strftime('%d.%m.%Y %H:%M'),
+                'is_group_note': n.is_group_note,
+                'author': {
+                    'id': n.author.id,
+                    'first_name': n.author.first_name,
+                    'last_name': n.author.last_name,
+                    'group_number': n.author.group_number,
+                },
+            }
+            for n in notes_qs
+        ]
+        return JsonResponse(notes, safe=False)
 
     elif request.method == 'POST':
         try:
@@ -167,26 +197,21 @@ def notes_api(request):
             
             data = json.loads(body)
             text = data.get('text', '').strip()
+            is_group_note = bool(data.get('is_group_note', False))
             
             print("Текст заметки:", text)
             
             if not text:
                 return JsonResponse({'success': False, 'error': 'Текст заметки не может быть пустым'}, status=400)
             
-            # Используем первого студента
-            student = Student.objects.first()
-            if not student:
-                # Создаем тестового студента если нет
-                student = Student.objects.create(
-                    name='Тестовый Студент',
-                    email='test@example.com'
-                )
-                print("Создан тестовый студент:", student.name)
+            
             
             # Создаем заметку с привязкой к студенту
             note = StudentNote.objects.create(
                 student=student,
-                text=text
+                author=student,
+                text=text,
+                is_group_note=is_group_note
             )
             print("Заметка создана в БД с ID:", note.id)
             
@@ -196,7 +221,14 @@ def notes_api(request):
                     'id': note.id,
                     'text': note.text,
                     'created_at': note.created_at.isoformat(),
-                    'date': note.created_at.strftime('%d.%m.%Y %H:%M')
+                    'date': note.created_at.strftime('%d.%m.%Y %H:%M'),
+                    'is_group_note': note.is_group_note,
+                    'author': {
+                        'id': note.author.id,
+                        'first_name': note.author.first_name,
+                        'last_name': note.author.last_name,
+                        'group_number': note.author.group_number,
+                    },
                 }
             })
             

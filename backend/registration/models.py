@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin, AbstractBaseUser
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -30,7 +30,7 @@ class StudentManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
-class Student(AbstractUser):
+class Student(AbstractBaseUser, PermissionsMixin):
     username = None
     email = models.EmailField(_('email address'), unique=True)
     
@@ -118,10 +118,37 @@ class Exam(models.Model):
         return f"{self.name} ({self.type})"
     
 class StudentNote(models.Model):
-    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Студент')
-    text = models.TextField(verbose_name='Текст заметки')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
+    student = models.ForeignKey(
+        Student, 
+        on_delete=models.CASCADE,
+        related_name='notes',
+        help_text='Владелец заметки (для личных заметок)'
+    )
+
+    author = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        related_name='authored_notes',
+        help_text='Кто создал заметку (для групповых - тоже нужно знать автора)'
+    )
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    is_group_note = models.BooleanField(
+        default=False,
+        help_text='Отметка, что заметка достунпа всем студентам этой группы'
+    )
+
+    group_number = models.CharField(
+        max_length=4,
+        blank=True,
+        help_text = 'Номер группы, для которой видна заметка, если она групповая'
+    )
+
+    def save(self, *args, **kwargs):
+        if self.is_group_note and self.author and self.author.group_number:
+            self.group_number = self.author.group_number
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Заметка студента'

@@ -115,7 +115,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'student_dashboard',
         'USER': 'postgres',
-        'PASSWORD': 'Dank_11774$_Piron',
+        'PASSWORD': '_7WZdn4xeQ4v-7FJr-mw',
         'HOST': 'localhost',
         'PORT': '5432',
     }

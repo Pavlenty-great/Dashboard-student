@@ -10,24 +10,36 @@ const Body = () => {
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState('');
 
-  // Загрузка экзаменов из БД
+  //режим заметок
+  const [notesScope, setNotesScope] = useState('personal');
+
+  //флаг для создаваемой заметки
+  const [isGroupNote, setIsGroupNote] = useState(false);
+
+  // Первый useEffect: загрузка экзаменов и начальных заметок
   useEffect(() => {
     fetchExams();
+    fetchNotes('personal');
   }, []);
 
-  // Загрузка заметок из localStorage при монтировании
+  // Второй useEffect: смена вкладки заметок
   useEffect(() => {
-    const savedNotes = localStorage.getItem('studentNotes');
-    if (savedNotes) {
-      setNotes(JSON.parse(savedNotes));
+    fetchNotes(notesScope);
+  }, [notesScope]);
+
+  const fetchNotes = async (scope) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/notes/?
+scope=${scope}`, {
+        credentials: 'include',
+      });
+      const data = await response.json();
+      setNotes(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Ошибка загрузки заметок:', error);
+      setNotes([]);
     }
-  }, []);
-
-  // Сохранение заметок в localStorage при изменении
-  useEffect(() => {
-    localStorage.setItem('studentNotes', JSON.stringify(notes));
-  }, [notes]);
-
+  };
   // Загрузка экзаменов из БД
   const fetchExams = async () => {
     try {
@@ -46,10 +58,10 @@ const Body = () => {
         method: 'POST',
       });
       const result = await response.json();
-      
+
       if (result.success) {
         // Обновляем локальное состояние
-        setExams(exams.map(exam => 
+        setExams(exams.map(exam =>
           exam.id === examId ? { ...exam, passed: result.passed } : exam
         ));
       }
@@ -67,17 +79,20 @@ const Body = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ text: newNote.trim() })
+          credentials: 'include',
+          body: JSON.stringify({ text: newNote.trim(), is_group_note: isGroupNote, })
         });
-        
+
         const result = await response.json();
-        
-        if (result.success) {
-          setNotes([result.note, ...notes]);
-          setNewNote('');
-        } else {
+
+        if (!response.ok || !result.success) {
           console.error('Ошибка добавления заметки:', result.error);
+          return;
         }
+
+        setNotes([result.note, ...notes]);
+        setNewNote('');
+
       } catch (error) {
         console.error('Ошибка добавления заметки:', error);
       }
@@ -90,9 +105,9 @@ const Body = () => {
       const response = await fetch(`http://localhost:8000/api/notes/${noteId}/delete/`, {
         method: 'DELETE',
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         setNotes(notes.filter(note => note.id !== noteId));
       } else {
@@ -188,6 +203,23 @@ const Body = () => {
       {/* Нижний ряд: заметки на всю ширину */}
       <div className="section notes-section">
         <h2>Заметки</h2>
+
+        {/* Переключатель режима заметок: личные / группы */}
+        <div className="notes-scope-toggle">
+          <button
+            className={notesScope === 'personal' ? 'scope-btn active' : 'scope-btn'}
+            onClick={() => setNotesScope('personal')}
+          >
+            Мои заметки
+          </button>
+          <button
+            className={notesScope === 'group' ? 'scope-btn active' : 'scope-btn'}
+            onClick={() => setNotesScope('group')}
+          >
+            Заметки группы
+          </button>
+        </div>
+
         <div className="notes-input">
           <input
             type="text"
@@ -197,10 +229,22 @@ const Body = () => {
             placeholder="Введите новую заметку..."
             className="note-input"
           />
+
+          {/* Чекбокс: сделать заметку групповой */}
+          <label className="group-note-checkbox">
+            <input
+              type="checkbox"
+              checked={isGroupNote}
+              onChange={(e) => setIsGroupNote(e.target.checked)}
+            />
+            Сделать заметку групповой
+          </label>
+
           <button onClick={handleAddNote} className="add-note-btn">
             Добавить
           </button>
         </div>
+
         <div className="notes-list">
           {notes.map(note => (
             <div key={note.id} className="note-item">
@@ -209,6 +253,13 @@ const Body = () => {
                 <span className="note-date">
                   {note.date || formatNoteDate(note.created_at)}
                 </span>
+
+                {/* Подпись автора у групповых заметок */}
+                {note.is_group_note && note.author && (
+                  <span className="note-author">
+                    Автор: {note.author.last_name} {note.author.first_name} ({note.author.group_number})
+                  </span>
+                )}
               </div>
               <button
                 onClick={() => handleDeleteNote(note.id)}
@@ -219,7 +270,11 @@ const Body = () => {
             </div>
           ))}
           {notes.length === 0 && (
-            <p className="no-notes">Заметок пока нет</p>
+            <p className="no-notes">
+              {notesScope === 'personal'
+                ? 'Личных заметок пока нет'
+                : 'Групповых заметок пока нет'}
+            </p>
           )}
         </div>
       </div>

@@ -4,8 +4,8 @@ from .models import Student
 
 @admin.register(Student)
 class StudentAdmin(UserAdmin):
-    list_display = ('email', 'first_name', 'last_name', 'group_number', 'is_staff')
-    list_filter = ('group_number', 'is_staff', 'is_superuser')
+    list_display = ('email', 'first_name', 'last_name', 'group_number')
+    list_filter = ('group_number', 'is_superuser')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'middle_name', 'group_number')}),
